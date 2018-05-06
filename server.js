@@ -2,12 +2,16 @@ require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
+const passport = require("passport");
 
 const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
 const posts = require("./routes/api/posts");
 
 const app = express();
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 // DB config
 const db = process.env.MONGO_URI;
@@ -18,9 +22,11 @@ mongoose
   .then(() => console.log("MongoDB connected!\n"))
   .catch(err => console.log(err));
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+// passport middleware
+app.use(passport.initialize());
+
+// passport config
+require("./config/passport.js")(passport);
 
 // Use Routes
 app.use("/api/users", users);
